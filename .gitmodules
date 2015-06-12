@@ -6,10 +6,6 @@
 	path = lib/frozen
 	url = https://github.com/cesanta/frozen.git
 	ignore = dirty
-[submodule "lib/slre"]
-	path = lib/slre
-	url = https://github.com/cesanta/slre.git
-	ignore = dirty
 [submodule "lib/googletest"]
 	path = lib/googletest
 	url = https://chromium.googlesource.com/external/googletest.git
