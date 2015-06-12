@@ -35,7 +35,8 @@ namespace ouroboros
 	ouroboros_server::ouroboros_server(uint16_t aPort)
 	:mpServer(NULL), mTree(),
 		mStore(mTree.get_data_store()),
-		mFunctionManager(mTree.get_function_manager())
+		mFunctionManager(mTree.get_function_manager()),
+		mCallbackManager(mStore)
 	{
 
 		//The following line is a hack workaround to trying to avoid using
@@ -80,14 +81,15 @@ namespace ouroboros
 
 	bool ouroboros_server::set(const std::string& aGroup, const std::string& aField, const var_field& aFieldData)
 	{
-		var_field *result = mStore.get(normalize_group(aGroup), aField);
+		std::string norm_group(normalize_group(aGroup)); 
+		var_field *result = mStore.get(norm_group, aField);
 		if (!result)
 		{
 			return false;
 		}
 		result->setJSON(aFieldData.getJSON());
 
-		handle_notification(aGroup, aField);
+		handle_notification(norm_group, aField);
 		return true;
 	}
 
@@ -126,7 +128,8 @@ namespace ouroboros
 	void ouroboros_server::handle_name_rest(const rest_request& aRequest)
 	{
 		//get reference to named thing
-		var_field *named = mStore.get(normalize_group(aRequest.getGroups()), aRequest.getFields());
+		std::string norm_group = normalize_group(aRequest.getGroups());
+		var_field *named = mStore.get(norm_group, aRequest.getFields());
 
 		std::string sjson;
 		mg_connection *conn = aRequest.getConnection();
@@ -141,7 +144,7 @@ namespace ouroboros
 
 					if (named->setJSON(json))
 					{
-						handle_notification(aRequest.getGroups(), aRequest.getFields());
+						handle_notification(norm_group, aRequest.getFields());
 						sjson = detail::good_JSON();
 					}
 					else
@@ -358,11 +361,7 @@ namespace ouroboros
 
 	void ouroboros_server::handle_notification(const std::string& aGroup, const std::string& aField)
 	{
-		std::string key(aGroup+'/'+aField);
-		if (mCallbackSubjects.count(key))
-		{
-			mCallbackSubjects[key].notify();
-		}
+		mCallbackManager.trigger_callbacks(aGroup, aField);
 	}
 
 	mg_result ouroboros_server::handle_uri(mg_connection *conn, const std::string& uri)
@@ -397,37 +396,14 @@ namespace ouroboros
 		}
 	}
 
-	std::string ouroboros_server::register_callback(
-		const std::string& aGroup,
-		const std::string& aField,
-		callback_f aCallback)
-	{
-		std::string result;
-		var_field *named = mStore.get(normalize_group(aGroup), aField);
-		if (named)
-		{
-			std::string key(aGroup + "/" + aField);
-			result = mCallbackManager.register_callback(key);
-			if (!mCallbackSubjects.count(key))
-			{
-				mCallbackSubjects[key] = subject<id_callback<var_field*, callback_f> >();
-			}
 
-			id_callback<var_field*, callback_f> cb(result, named, aCallback);
-			mCallbackSubjects[key].registerObserver(cb);
-		}
-		return result;
-	}
 
 	void ouroboros_server::unregister_callback(const std::string&)
 	{
 		//TODO
 	}
 	
-	bool ouroboros_server::register_function(const std::string& aFunctionName, function_f aResponse)
-	{
-		return mFunctionManager.register_function(aFunctionName, aResponse);
-	}
+	
 	
 	void ouroboros_server::execute_function(const std::string& aFunctionName, const std::vector<std::string>& aParameters)
 	{

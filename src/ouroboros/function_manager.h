@@ -1,11 +1,10 @@
 #ifndef _OUROBOROS_FUNCTION_MANAGER_H_
 #define _OUROBOROS_FUNCTION_MANAGER_H_
 
-#include <ouroboros/callback.hpp>
-
 #include <vector>
 #include <string>
 #include <map>
+#include <functional>
 
 namespace ouroboros
 {
@@ -13,7 +12,7 @@ namespace ouroboros
 	{
 	public:
 		function_manager();
-		typedef void (*function_f)(const std::vector<std::string>& aArguments);
+		typedef std::function<void(const std::vector<std::string>&)> function_f;
 		
 		/**	Registers a response function for the specified function call.
 		 *
@@ -22,8 +21,9 @@ namespace ouroboros
 		 *		void(std::vector<std::string>) function.
 		 *	@returns True upon success, false otherwise.
 		 */
+		template<typename F>
 		bool register_function(
-			const std::string& aFunctionName, function_f aResponse);
+			const std::string& aFunctionName, F aResponse);
 		
 		/**	Executes a response function for the specified function call.
 		 *
@@ -39,5 +39,7 @@ namespace ouroboros
 		std::map<std::string, std::vector<function_f> > mFunctionCallbacks;
 	};
 }
+
+#include "function_manager.ipp"
 
 #endif/*_OUROBOROS_FUNCTION_MANAGER_H_*/

@@ -1,6 +1,5 @@
 #include "../ouroboros_server.h"
-#include "../callback.hpp"
-#include <server/plugin.h>
+#include <ouroboros/plugin.h>
 #include <iostream>
 
 using namespace ouroboros;
@@ -21,8 +20,7 @@ extern "C" bool plugin_entry(ouroboros_server& aServer)
 {
 	cout << "Initializing plugin..." << endl;
 
-	aServer.register_callback("", "a_number", ::callback);
-	aServer.register_callback("group_1.group_2", "a_string_inside_group_2", ::callback);
+	aServer.register_callback("home", "a_number", ::callback);
 
 	aServer.register_function("func", ::func);
 	

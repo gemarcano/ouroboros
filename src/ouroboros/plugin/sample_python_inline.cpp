@@ -1,5 +1,5 @@
 #include <Python.h>
-#include <server/plugin.h>
+#include <ouroboros/plugin.h>
 
 extern "C" bool plugin_entry(ouroboros::ouroboros_server&)
 {

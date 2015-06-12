@@ -4,38 +4,41 @@
 
 #include <sstream>
 #include <cstdlib>
+#include <functional>
+#include <algorithm>
 
 namespace ouroboros
 {
-	static const std::string rand_string("0123456789");
-
-	callback_manager::callback_manager()
+	const std::string callback_manager::rand_string("0123456789");
+	
+	callback_manager::callback_manager(data_store<var_field>& aStore)
+	:mStore(aStore)
 	{}
 
-	std::string callback_manager::register_callback(
-		const std::string& aFieldName)
+	void callback_manager::trigger_callbacks(const std::string& aGroup, const std::string& aField)
 	{
-		std::string result = aFieldName;
-		result += ":";
-		result = detail::generate_random_string(result, rand_string, 1);
-
-		while (mIdToCallbacks.count(result))
+		std::string resource = aGroup + '/' + aField;
+		if (mFieldToCallbacks.count(resource))
 		{
-			result = detail::generate_random_string(result, rand_string, 1);
+			for (auto& pair : mFieldToCallbacks.at(resource))
+			{
+				pair.second();
+			}
 		}
-
-		mIdToCallbacks[result] = aFieldName;
-		return result;
 	}
 
 	std::string callback_manager::unregister_callback(const std::string& aID)
 	{
 		std::string result;
-		if (mIdToCallbacks.count(aID))
+		
+		if (mIdToFields.count(aID))
 		{
-			result = mIdToCallbacks[aID];
+			std::string field = result = mIdToFields[aID];
+			std::vector<std::pair<std::string, callback_f>>& vec = mFieldToCallbacks[field];
+			auto cmp = [aID](const std::pair<std::string, callback_f>& a){ return aID == a.first; };
+			vec.erase(std::find_if(vec.begin(), vec.end(), cmp));
 		}
-		mIdToCallbacks.erase(aID);
+
 		return result;
 	}
 }

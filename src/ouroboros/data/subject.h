@@ -1,11 +1,11 @@
-#ifndef _OUROBOROS_OBSERVER_H_
-#define _OUROBOROS_OBSERVER_H_
+#ifndef _OUROBOROS_SUBJECT_H_
+#define _OUROBOROS_SUBJECT_H_
 
 #include <vector>
+#include <functional>
 
 namespace ouroboros
 {
-	template <class Observer>
 	class subject
 	{
 	public:
@@ -14,6 +14,7 @@ namespace ouroboros
 		 *	@param [in] aObserver Observer functor to call on a notification.
 		 *		functor should act like a void() function.
 		 */
+		template <class Observer>
 		void registerObserver(const Observer& aObserver);
 
 		//TODO provide a way to unregister an observer
@@ -24,10 +25,8 @@ namespace ouroboros
 		void notify() const;
 
 	private:
-		std::vector<Observer> mObservers;
+		std::vector<std::function<void()>> mObservers;
 	};
 }
 
-#include "subject.ipp"
-
-#endif//_OUROBOROS_OBSERVER_H_
+#endif//_OUROBOROS_SUBJECT_H_
