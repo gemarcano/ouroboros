@@ -8,11 +8,7 @@
 #include <sstream>
 #include <cassert>
 #include <sstream>
-
-//This header is not in C++03, but it can be found online if the platform does
-//not already support C99. Most modern Linux systems have stdint.h in their
-//include folders, so it should be picked up automatically.
-#include <stdint.h>
+#include <cstdint>
 
 namespace ouroboros
 {
@@ -30,28 +26,15 @@ namespace ouroboros
 		}
 	}
 
-	std::string url_regex("(.+://)?(.+)");
-
 	ouroboros_server::ouroboros_server(uint16_t aPort)
 	:mpServer(NULL), mTree(),
 		mStore(mTree.get_data_store()),
 		mFunctionManager(mTree.get_function_manager()),
 		mCallbackManager(mStore)
 	{
-
-		//The following line is a hack workaround to trying to avoid using
-		//functional support in c++03
-		if (!mpSendServer)
-		{
-			//HACK
-			mpSendServer = this;
-		}
-
-		std::stringstream ss;
-		ss << aPort;
 		mpServer = mg_create_server(this, ouroboros_server::event_handler);
-		mg_set_option(mpServer, "document_root", ".");      // Serve current directory
-		mg_set_option(mpServer, "listening_port", ss.str().c_str());  // Open port 8080
+		mg_set_option(mpServer, "document_root", ".");
+		mg_set_option(mpServer, "listening_port", std::to_string(aPort).c_str());
 	}
 
 	ouroboros_server::~ouroboros_server()
@@ -262,12 +245,8 @@ namespace ouroboros
 
 					std::string response_url = json.get("callback");
 
-					//create callback
-
-					//Due to a limitation of C++03, use a semi-global map
-					//to track response URLs
 					mResponseUrls[named] = response_url;
-					std::string callback_id = register_callback(aRequest.getGroups(), aRequest.getFields(), establish_connection);
+					std::string callback_id = register_callback(aRequest.getGroups(), aRequest.getFields(), std::bind(establish_connection, std::ref(*this), std::placeholders::_1));
 
 					std::stringstream ss;
 					ss << "{ \"id\" : \"" << callback_id << "\" }";
@@ -302,13 +281,13 @@ namespace ouroboros
 		mg_send_data(conn, response.c_str(), response.length());
 	}
 
-	void ouroboros_server::establish_connection(var_field* aResponse)
+	void ouroboros_server::establish_connection(ouroboros_server& aServer, var_field* aResponse)
 	{
-		if (mpSendServer->mResponseUrls.count(aResponse))
+		if (aServer.mResponseUrls.count(aResponse))
 		{
-			std::string url = mpSendServer->mResponseUrls[aResponse];
+			std::string url = aServer.mResponseUrls[aResponse];
 			mg_connection *client;
-			client = mg_connect(mpSendServer->mpServer, url.c_str());
+			client = mg_connect(aServer.mpServer, url.c_str());
 			client->connection_param = aResponse;
 		}
 	}
@@ -411,6 +390,5 @@ namespace ouroboros
 	}
 	
 	const std::string ouroboros_server::group_delimiter(data_store<var_field>::group_delimiter);
-	ouroboros_server *ouroboros_server::mpSendServer = NULL;
 }
 

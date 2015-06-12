@@ -15,11 +15,9 @@ namespace ouroboros
 	{
 		if (mFunctionCallbacks.count(aFunctionName))
 		{
-			typedef std::vector<function_f>::const_iterator iter;
-			std::vector<function_f>& vec = mFunctionCallbacks[aFunctionName];
-			for (iter itr = vec.begin(); itr != vec.end(); ++itr)
+			for (function_f& func : mFunctionCallbacks[aFunctionName])
 			{
-				(*itr)(aParameters);
+				func(aParameters);
 			}
 		}
 	}

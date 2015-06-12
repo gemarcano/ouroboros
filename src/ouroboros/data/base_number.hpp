@@ -107,6 +107,7 @@ namespace ouroboros
 		bool setJSON(const JSON& aJSON);
 
 	private:
+		std::string print_value();
 		std::pair<Number, Number> mRange;
 		Number mValue;
 

@@ -126,6 +126,13 @@ namespace ouroboros
 		 *
 		 */
 		void unregister_callback(const std::string& aID);
+		
+		//@{
+		//Do not allow for the server to be copyable nor allow for it to be
+		//assigned to anything else.
+		ouroboros_server(const ouroboros_server&) = delete;
+		ouroboros_server& operator=(const ouroboros_server&) = delete;
+		//@}
 
 	private:
 
@@ -142,18 +149,13 @@ namespace ouroboros
 			const std::string& aGroup, const std::string& aField);
 
 		static ouroboros_server *mpSendServer;
-		static void establish_connection(var_field* aResponse);
+		static void establish_connection(ouroboros_server& aServer, var_field* aResponse);
 		void send_response(mg_connection* aConn);
 
 		static int event_handler(mg_connection *conn, mg_event ev);
 		static std::string normalize_group(const std::string& aGroup);
 
-		//@{
-		//Do not allow for the server to be copyable nor allow for it to be
-		//assigned to anything else.
-		ouroboros_server(const ouroboros_server&);
-		ouroboros_server& operator=(const ouroboros_server&);
-		//@}
+
 
 		mg_server *mpServer;
 		device_tree<var_field> mTree;

@@ -113,21 +113,17 @@ namespace ouroboros
 		result += ", " + base + ", \"contents\" : {";
 		if (!(mGroups.empty() && mItems.empty()))
 		{
-			typedef std::list<std::string>::const_iterator l_iter;
-
-			for (l_iter itr = mInsertOrder.begin();
-				itr != mInsertOrder.end();
-				++itr)
+			for (const std::string& item : mInsertOrder)
 			{
-				if (mGroups.count(*itr))
+				if (mGroups.count(item))
 				{
-					result += " \"" + *itr + "\" : "
-						+ mGroups.find(*itr)->second->getJSON() + ",";
+					result += " \"" + item + "\" : "
+						+ mGroups.find(item)->second->getJSON() + ",";
 				}
-				if (mItems.count(*itr))
+				if (mItems.count(item))
 				{
-					result +=  "\"" + *itr + "\" : "
-						+ mItems.find(*itr)->second->getJSON() + ",";
+					result +=  "\"" + item + "\" : "
+						+ mItems.find(item)->second->getJSON() + ",";
 				}
 			}
 
@@ -145,10 +141,9 @@ namespace ouroboros
 	std::vector<T*> group<T>::getFields() const
 	{
 		std::vector<T*> result;
-		typedef typename std::map<std::string, T*>::const_iterator iter;
-		for (iter itr = mItems.begin(); itr != mItems.end(); ++itr)
+		for (const std::pair<std::string, T*>& pair : mItems)
 		{
-			result.push_back(itr->second);
+			result.push_back(pair.second);
 		}
 		return result;
 	}
@@ -157,10 +152,9 @@ namespace ouroboros
 	std::vector<group<T>*> group<T>::getGroups() const
 	{
 		std::vector<group<T>*> result;
-		typedef typename std::map<std::string, group<T>*>::const_iterator iter;
-		for (iter itr = mGroups.begin(); itr != mGroups.end(); ++itr)
+		for (const std::pair<std::string, group<T>*>& pair : mGroups)
 		{
-			result.push_back(itr->second);
+			result.push_back(pair.second);
 		}
 		return result;
 	}
