@@ -1,4 +1,4 @@
-AM_CXXFLAGS = -std=c++03
+AM_CXXFLAGS = -std=c++11
 AM_CPPFLAGS = -I$(top_srcdir)/lib/ -I$(top_srcdir)/src/
 
 noinst_LIBRARIES = libdata.a libJSON.a

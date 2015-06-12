@@ -2,7 +2,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/lib/googletest \
 	-I$(top_srcdir)/lib/googletest/include -I$(top_srcdir)/src/ \
 	-I$(top_srcdir)/lib/
 
-AM_CXXFLAGS = -Wall -Wextra -Wpedantic -std=c++03 -pthread
+AM_CXXFLAGS = -Wall -Wextra -Wpedantic -std=c++11 -pthread
 
 check_PROGRAMS = base_string_test data_store_test
 check_LIBRARIES= libgoogletest.a
@@ -14,7 +14,6 @@ _shared_ldadd =  $(top_builddir)/src/ouroboros/libouroboros.a \
 	$(top_builddir)/src/ouroboros/data/libdata.a \
 	$(top_builddir)/src/ouroboros/data/libJSON.a \
 	$(top_builddir)/lib/libmongoose.a \
-	$(top_builddir)/lib/libslre.a \
 	$(top_builddir)/lib/libfrozen.a libgoogletest.a \
 	-ldl
 

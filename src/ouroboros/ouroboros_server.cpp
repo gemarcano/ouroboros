@@ -4,7 +4,6 @@
 #include <ouroboros/rest.h>
 
 #include <mongoose/mongoose.h>
-#include <slre/slre.h>
 
 #include <sstream>
 #include <cassert>
