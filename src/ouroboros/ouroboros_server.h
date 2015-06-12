@@ -5,7 +5,6 @@
 #include <ouroboros/callback_manager.h>
 #include <ouroboros/data/base.hpp>
 #include <ouroboros/data/data_store.hpp>
-#include <ouroboros/data/subject.h>
 #include <ouroboros/function_manager.h>
 #include <ouroboros/device_tree.hpp>
 

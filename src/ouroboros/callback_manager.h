@@ -2,7 +2,6 @@
 #define _OUROBOROS_CALLBACK_MANAGER_H_
 
 #include <ouroboros/data/base.hpp>
-#include <ouroboros/data/subject.h>
 #include <ouroboros/device_tree.hpp>
 
 #include <map>
