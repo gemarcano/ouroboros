@@ -19,8 +19,6 @@ namespace ouroboros
 	class ouroboros_server
 	{
 	public:
-		typedef function_manager::function_f function_f;
-		typedef std::function<void(var_field*)> callback_f;
 
 		/**	Constructor.
 		 *

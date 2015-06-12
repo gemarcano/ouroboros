@@ -32,8 +32,10 @@ namespace ouroboros
 		 *	@returns The ID assigned to the callback based on the given name.
 		 */
 		template <typename F>
-		std::string register_callback(const std::string& aGroup, 
-			const std::string& aField, F aCallback);
+		std::string register_callback(
+			const std::string& aGroup,
+			const std::string& aField,
+			F&& aCallback);
 		
 		/**	Runs all callbacks associated with the specified field.
 		 *
@@ -43,7 +45,8 @@ namespace ouroboros
 		 *	@post If there are callbacks associated with the field aFieldName,
 		 *		these will be called, else nothing will happen.
 		 */
-		void trigger_callbacks(const std::string& aGroup, const std::string& aField);
+		void trigger_callbacks(
+			const std::string& aGroup, const std::string& aField);
 		
 		/**	Unregisters a callback with the given ID.
 		 *

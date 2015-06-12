@@ -23,7 +23,7 @@ namespace ouroboros
 		 */
 		template<typename F>
 		bool register_function(
-			const std::string& aFunctionName, F aResponse);
+			const std::string& aFunctionName, F&& aResponse);
 		
 		/**	Executes a response function for the specified function call.
 		 *

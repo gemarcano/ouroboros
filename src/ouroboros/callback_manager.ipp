@@ -2,8 +2,7 @@ namespace ouroboros
 {
 	template <typename F>
 	std::string callback_manager::register_callback(
-		const std::string& aGroup, 
-		const std::string& aField, F aCallback)
+		const std::string& aGroup, const std::string& aField, F&& aCallback)
 	{
 		std::string result;
 		var_field *named = mStore.get(aGroup, aField);
