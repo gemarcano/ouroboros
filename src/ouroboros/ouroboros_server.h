@@ -13,11 +13,7 @@
 #include <pthread.h>
 #include <mongoose/mongoose.h>
 
-
-//This header is not in C++03, but it can be found online if the platform does
-//not already support C99. Most modern Linux systems have stdint.h in their
-//include folders, so it should be picked up automatically.
-#include <stdint.h>
+#include <cstdint>
 
 namespace ouroboros
 {

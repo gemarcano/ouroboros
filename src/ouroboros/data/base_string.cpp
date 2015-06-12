@@ -2,12 +2,12 @@
 
 #include <limits>
 #include <sstream>
-#include <slre/slre.h>
+#include <regex>
 
 namespace ouroboros
 {
 	base_string::base_string()
-	:var_field("", ""), mPattern("*"),
+	:var_field("", ""), mPattern(".*"), mRegex(mPattern),
 		mLengthRange(
 			std::numeric_limits<std::size_t>::min(),
 			std::numeric_limits<std::size_t>::max()),
@@ -20,15 +20,13 @@ namespace ouroboros
 		const std::string& aValue,
 		const std::string& aPattern,
 		std::pair<std::size_t, std::size_t> aLengthRange)
-	:var_field(aTitle, aDescription), mPattern(aPattern),
+	:var_field(aTitle, aDescription), mPattern(aPattern), mRegex(mPattern),
 		mLengthRange(aLengthRange), mValue(aValue)
 	{
 		mLengthRange.first = std::min(aLengthRange.first, aLengthRange.second);
 		mLengthRange.second = std::max(aLengthRange.first, aLengthRange.second);
 
-		int match = slre_match(
-			mPattern.c_str(), mValue.c_str(), mValue.length(), NULL, 0, 0);
-		if (match < 0)
+		if (!std::regex_match(mValue, mRegex))
 		{
 			throw std::domain_error("Value does not match pattern!");
 		}
@@ -97,18 +95,31 @@ namespace ouroboros
 			base_field::setDescription(aJSON.get("description"));
 		}
 
-		if (aJSON.exists("value"))
+		bool valFound = aJSON.exists("value");
+		bool patFound = aJSON.exists("pattern");
+		if (patFound != valFound)
 		{
 			found = true;
-			if (!this->setString(aJSON.get("value")))
+			if (valFound)
 			{
-				result = false;
+				if (!this->setString(aJSON.get("value")))
+				{
+					result = false;
+				}
+			}
+
+			if (patFound)
+			{
+				if (!this->setPattern(aJSON.get("pattern")))
+				{
+					result = false;
+				}
 			}
 		}
-		if (result && aJSON.exists("pattern"))
+		else if (valFound && patFound)
 		{
 			found = true;
-			if (!this->setPattern(aJSON.get("pattern")))
+			if (!this->setPattern(aJSON.get("pattern"), aJSON.get("value")))
 			{
 				result = false;
 			}
@@ -163,18 +174,28 @@ namespace ouroboros
 	bool base_string::setPattern(
 		const std::string& aPattern, const std::string& aNewValue)
 	{
-		bool success = false;
+		bool success = true;
 		std::string oldPattern = mPattern;
 
 		mPattern = aPattern;
-		if (checkValidity(aNewValue))
+		try
+		{
+			mRegex = mPattern;
+		}
+		catch (std::regex_error&)
+		{
+			success = false;
+		}
+		
+		if (success && checkValidity(aNewValue))
 		{
 			mValue = aNewValue;
-			success = true;
 		}
 		else
 		{
+			success = false;
 			mPattern = oldPattern;
+			mRegex = mPattern;
 		}
 
 		return success;
@@ -236,11 +257,9 @@ namespace ouroboros
 
 	bool base_string::checkValidity (const std::string& aString)
 	{
-		int match = slre_match(
-			mPattern.c_str(), aString.c_str(), aString.length(), NULL, 0, 0);
 		if ((aString.length() >= mLengthRange.first) &&
 			(aString.length() <= mLengthRange.second) &&
-			(match >= 0))
+			std::regex_match(aString, mRegex))
 		{
 			return true;
 		}

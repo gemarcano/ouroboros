@@ -1,24 +1,24 @@
 #include <ouroboros/rest.h>
 
-#include <slre/slre.h>
+#include <regex>
 
 #include <string>
 #include <utility>
 
 namespace ouroboros
 {
-	static const std::string character_set("[a-z0-9-_\\.]");
-	static const std::string full_regex("^/groups/(" + character_set + "+)/fields/(" + character_set + "+)/?$");
-	static const std::string group_regex("^/groups/(" + character_set + "+)/?$");
-	static const std::string functions_regex("^/groups/(" + character_set + "+)/functions/(" + character_set + "+)/?$");
+	static const std::string character_set(".");
+	static const std::regex full_regex("^/groups/(" + character_set + "+)/fields/(" + character_set + "+?)/?$");
+	static const std::regex group_regex("^/groups/(" + character_set + "+?)/?$");
+	static const std::regex functions_regex("^/groups/(" + character_set + "+)/functions/(" + character_set + "+?)/?$");
 	
-	static const std::string root_field_regex("^/fields/(" + character_set + "+)/?$");
-	static const std::string root_group_regex("^/groups/?$");
+	static const std::regex root_field_regex("^/fields/(" + character_set + "+?)/?$");
+	static const std::regex root_group_regex("^/groups/?$");
 	
-	static const std::string root_functions_regex("^/functions/(" + character_set + "+)/?$");
+	static const std::regex root_functions_regex("^/functions/(" + character_set + "+?)/?$");
 	
-	static const std::string full_regex_callback("^/groups/(" + character_set + "+)/fields/(" + character_set + "+)/callback$");
-	static const std::string root_field_regex_callback("^/fields/(" + character_set + "+)/callback$");
+	static const std::regex full_regex_callback("^/groups/(" + character_set + "+)/fields/(" + character_set + "+?)/callback$");
+	static const std::regex root_field_regex_callback("^/fields/(" + character_set + "+?)/callback$");
 
 	/**	Extracts the group from the given REST URI.
 	 *
@@ -42,65 +42,36 @@ namespace ouroboros
 
 	bool is_REST_URI(const std::string& aURI)
 	{
-		int result =
-			slre_match(full_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		int group_result =
-			slre_match(group_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		int functions_result =
-			slre_match(functions_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-			
-		int root_field_result =
-			slre_match(root_field_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		int root_group_result =
-			slre_match(root_group_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-
-		int root_functions_result =
-			slre_match(root_functions_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-
-		int root_callback_result = 
-			slre_match(root_field_regex_callback.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		int field_callback_result =
-			slre_match(full_regex_callback.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-			
-		return (result >= 0 ||
-			group_result >= 0 ||
-			root_field_result >= 0 ||
-			root_group_result >= 0 ||
-			root_callback_result >= 0 ||
-			field_callback_result >= 0 ||
-			functions_result >=0 ||
-			root_functions_result >= 0);
+		return std::regex_match(aURI, full_regex) ||
+			std::regex_match(aURI, group_regex) ||
+			std::regex_match(aURI, functions_regex) ||
+			std::regex_match(aURI, root_field_regex) ||
+			std::regex_match(aURI, root_group_regex) ||
+			std::regex_match(aURI, root_functions_regex) ||
+			std::regex_match(aURI, root_field_regex_callback) ||
+			std::regex_match(aURI, full_regex_callback);
 	}
 
 	static rest_request_type get_rest_request_type(const std::string& aURI)
 	{
-		int item_result = slre_match(
-			full_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		int root_item_result = slre_match(
-			root_field_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		if (item_result >= 0 || root_item_result >= 0)
+		//Order matters, if character_set is too accepting, it could swallow up
+		//the characters "/callback", so check the callback regex first before
+		//checking the regular fields one
+		if (std::regex_match(aURI, full_regex_callback) ||
+			std::regex_match(aURI, root_field_regex_callback))
+			return CALLBACK;
+		
+		if (std::regex_match(aURI, full_regex) ||
+			std::regex_match(aURI, root_field_regex))
 			return FIELDS;
 
-		int group_result = slre_match(
-			group_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		int root_group_result = slre_match(
-			root_group_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		if (group_result >= 0 || root_group_result >= 0)
+		if (std::regex_match(aURI, group_regex) ||
+			std::regex_match(aURI, root_group_regex))
 			return GROUPS;
 
-		int functions_result =
-			slre_match(functions_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		int root_functions_result =
-			slre_match(root_functions_regex.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		if (functions_result >= 0 || root_functions_result >= 0)
+		if (std::regex_match(aURI, functions_regex) ||
+			std::regex_match(aURI, root_functions_regex))
 			return FUNCTIONS;
-
-		int item_callback_result = slre_match(
-			full_regex_callback.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		int root_item_callback_result = slre_match(
-			root_field_regex_callback.c_str(), aURI.c_str(), aURI.length(), NULL, 0, 0);
-		if (item_callback_result >= 0 || root_item_callback_result >= 0)
-			return CALLBACK;
 
 		return NONE;
 	}
@@ -131,27 +102,24 @@ namespace ouroboros
 		std::pair<std::string, std::string> result;
 
 		//Check if user is accessing field in root first
-		struct slre_cap match[1];
-		if ((slre_match(root_field_regex.c_str(), aURI.c_str(), aURI.length(), match, 1, 0) >= 0) ||
-			(slre_match(root_field_regex_callback.c_str(), aURI.c_str(), aURI.length(), match, 1, 0) >= 0))
+		std::smatch match;
+		if (std::regex_match(aURI, match, root_field_regex) ||
+			std::regex_match(aURI, match, root_field_regex_callback))
 		{
 			result.first = std::string();
-			result.second.assign(match[0].ptr, match[0].len);
+			result.second = match[1];
 		}
 		else
 		{
-			struct slre_cap match[2];
-			if (slre_match(full_regex.c_str(), aURI.c_str(), aURI.length(), match, 2, 0) < 0)
+			if (!std::regex_match(aURI, match, full_regex))
 			{
-				slre_match(full_regex_callback.c_str(), aURI.c_str(), aURI.length(), match, 2, 0);
+				std::regex_match(aURI, match, full_regex_callback);
 			}
 
-			//Copy group title from match to remove remaining characters
-			std::string groupTitle(match[0].ptr);
-			groupTitle.erase(groupTitle.begin()+match[0].len, groupTitle.end());
+			std::string groupTitle(match[1]);
 
-			result.first.assign(groupTitle);
-			result.second.assign(match[1].ptr, match[1].len);
+			result.first = groupTitle;
+			result.second = match[2];
 		}
 
 		return result;
@@ -162,23 +130,21 @@ namespace ouroboros
 		std::pair<std::string, std::string> result;
 
 		//Check if user is accessing functions in root first
-		struct slre_cap match[1];
-		if(slre_match(root_functions_regex.c_str(), aURI.c_str(), aURI.length(), match, 1, 0) >= 0)
+		std::smatch match;
+		if(std::regex_match(aURI, match, root_functions_regex))
 		{
 			result.first = std::string();
-			result.second.assign(match[0].ptr, match[0].len);
+			result.second = match[1];
 		}
 		else
 		{
-			struct slre_cap match[2];
-			slre_match(functions_regex.c_str(), aURI.c_str(), aURI.length(), match, 2, 0);
+			std::regex_match(aURI, match, functions_regex);
 
 			//Copy group title from match to remove remaining characters
-			std::string groupTitle(match[0].ptr);
-			groupTitle.erase(groupTitle.begin()+match[0].len, groupTitle.end());
+			std::string groupTitle(match[1]);
 			
 			result.first.assign(groupTitle);
-			result.second.assign(match[1].ptr, match[1].len);
+			result.second = (match[2]);
 		}
 
 		return result;
@@ -186,11 +152,11 @@ namespace ouroboros
 	
 	std::string extract_group(const std::string& aURI)
 	{
-		struct slre_cap match[1];
+		std::smatch match;
 		std::string result;
-		if(slre_match(group_regex.c_str(), aURI.c_str(), aURI.length(), match, 1, 0) >= 0)
+		if(std::regex_match(aURI, match, group_regex))
 		{
-			result.assign(match[0].ptr, match[0].len);
+			result = match[1];
 		}
 
 		return result;

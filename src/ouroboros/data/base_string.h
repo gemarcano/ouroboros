@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 #include <cstddef>
+#include <regex>
 
 namespace ouroboros
 {
@@ -177,6 +178,8 @@ namespace ouroboros
 
 	private:
 		std::string mPattern;
+		std::regex mRegex;
+		
 		std::pair<std::size_t, std::size_t> mLengthRange;
 
 		std::string mValue;
