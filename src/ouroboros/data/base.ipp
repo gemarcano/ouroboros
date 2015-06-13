@@ -136,7 +136,7 @@ namespace ouroboros
 		result += " } }";
 		return result;
 	}
-	
+
 	template<class T>
 	std::vector<T*> group<T>::getFields() const
 	{

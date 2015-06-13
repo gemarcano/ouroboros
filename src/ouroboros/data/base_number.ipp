@@ -96,14 +96,13 @@ namespace ouroboros
 		{
 			return aNum;
 		}
-		
+
 		int cast_value(char aNum)
 		{
 			return aNum;
 		}
 	}
-	
-	
+
 	template<class Number, Number Min, Number Max>
 	std::string base_number<Number, Min, Max>::getJSON() const
 	{

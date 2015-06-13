@@ -5,7 +5,7 @@ namespace ouroboros
 		const std::string& aFunctionName, F&& aResponse)
 	{
 		mFunctionCallbacks[aFunctionName].emplace_back(aResponse);
-		
+
 		return true;
 	}
 }
