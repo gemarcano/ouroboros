@@ -26,6 +26,7 @@ namespace ouroboros
 		 *	@param [in] aStore Reference to data store with elements to manage.
 		 */
 		callback_manager(data_store<var_field>& aStore);
+		~callback_manager();
 
 		/**	Registers a callback with the given name.
 		 *

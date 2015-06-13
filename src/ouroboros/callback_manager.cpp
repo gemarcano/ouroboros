@@ -41,4 +41,15 @@ namespace ouroboros
 
 		return result;
 	}
+	
+	callback_manager::~callback_manager()
+	{
+		for (auto& pair : mFieldToCallbacks)
+		{
+			for (auto& pair2 : pair.second)
+			{
+				pair2.second = nullptr;
+			}
+		}
+	}
 }

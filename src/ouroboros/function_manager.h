@@ -33,9 +33,10 @@ namespace ouroboros
 		void execute_function(
 			const std::string& aFunctionName,
 			const std::vector<std::string>& aParameters);
-		
+
+		function_manager(const function_manager&) = delete;
+
 	private:
-		function_manager(const function_manager&);
 		std::map<std::string, std::vector<function_f> > mFunctionCallbacks;
 	};
 }

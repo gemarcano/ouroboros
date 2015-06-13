@@ -101,7 +101,7 @@ namespace ouroboros
 		std::string register_callback(
 			const std::string& aGroup,
 			const std::string& aField,
-			F aCallback);
+			F&& aCallback);
 
 		/**	Registers a response function for the specified function call.
 		 *
@@ -111,7 +111,7 @@ namespace ouroboros
 		 *	@returns True upon success, false otherwise.
 		 */
 		template <typename F>
-		bool register_function(const std::string& aFunctionName, F aResponse);
+		bool register_function(const std::string& aFunctionName, F&& aResponse);
 
 		/**	Executes a response function for the specified function call.
 		 *
@@ -154,8 +154,6 @@ namespace ouroboros
 
 		static int event_handler(mg_connection *conn, mg_event ev);
 		static std::string normalize_group(const std::string& aGroup);
-
-
 
 		mg_server *mpServer;
 		device_tree<var_field> mTree;
