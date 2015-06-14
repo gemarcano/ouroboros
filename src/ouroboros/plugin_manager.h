@@ -8,6 +8,8 @@
 
 namespace ouroboros
 {
+	class plugin;
+	
 	class plugin_manager
 	{
 	public:
@@ -17,7 +19,7 @@ namespace ouroboros
 		 *	@param [in] aServer Server reference to pass to plugins.
 		 *
 		 */
-		plugin_manager();
+		plugin_manager(ouroboros_server& aServer);
 
 		/**	Destructor.
 		 *
@@ -32,12 +34,12 @@ namespace ouroboros
 		 *	@returns True if the plugin loaded, false otherwise.
 		 *
 		 */
-		bool load(ouroboros_server& aServer, const std::string& aPath);
+		bool load(const std::string& aPath);
 
 		/**	Loads the given directory
 		 *
 		 */
-		std::size_t load_directory(ouroboros_server& aServer, const std::string& aDirectory);
+		std::size_t load_directory(const std::string& aDirectory);
 
 		/**	Unloads the given plugin.
 		 *
@@ -50,7 +52,8 @@ namespace ouroboros
 		bool unload(const std::string& aPath);
 
 	private:
-		std::map<std::string, void*> mPlugins;
+		ouroboros_server& mServer;
+		std::map<std::string, plugin> mPlugins;
 	};
 }
 

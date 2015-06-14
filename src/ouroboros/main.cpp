@@ -21,11 +21,12 @@ int main()
 	cout << "Starting Ouroboros...\n";
 
 	std::string plugin_directory("plugin");
-	plugin_manager plugin_manager;
+	
 	ouroboros_server s(8080);
+	plugin_manager plugin_manager(s);
 
 	cout << "\tPlugins loaded : " <<
-		plugin_manager.load_directory(s, plugin_directory) << endl;
+		plugin_manager.load_directory(plugin_directory) << endl;
 	signal(SIGINT, handler);
 
 	run = 1;

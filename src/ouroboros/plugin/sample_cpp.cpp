@@ -28,3 +28,8 @@ extern "C" bool plugin_entry(ouroboros_server& aServer)
 	return true;
 }
 
+extern "C" void plugin_exit(ouroboros_server& aServer)
+{
+	
+}
+
