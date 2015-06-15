@@ -24,7 +24,7 @@ namespace ouroboros
 	{
 		return *mpDataStore;
 	}
-	
+
 	template <class field>
 	function_manager& device_tree<field>::get_function_manager()
 	{

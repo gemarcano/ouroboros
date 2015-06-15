@@ -8,6 +8,18 @@
 			This is the Home group.
 		</description>
 		
+		<field type="signedByteField">
+			<title>a byte</title>
+			<description>A byte for testing</description>
+			<value>22</value>
+		</field>
+	
+		<field type="unsignedByteField">
+			<title>a byte2</title>
+			<description>A byte for testing</description>
+			<value>25</value>
+		</field>
+
 		<field type="signedIntField">
 			<title>A number</title>
 			<description>

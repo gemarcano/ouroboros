@@ -8,6 +8,8 @@
 
 namespace ouroboros
 {
+	class plugin;
+	
 	class plugin_manager
 	{
 	public:
@@ -51,7 +53,7 @@ namespace ouroboros
 
 	private:
 		ouroboros_server& mServer;
-		std::map<std::string, void*> mPlugins;
+		std::map<std::string, plugin> mPlugins;
 	};
 }
 

@@ -79,6 +79,30 @@ namespace ouroboros
 		return mValue;
 	}
 
+	namespace detail
+	{
+		template<class Number>
+		Number cast_value(Number aNum)
+		{
+			return aNum;
+		}
+
+		std::uint16_t cast_value(std::uint8_t aNum)
+		{
+			return aNum;
+		}
+
+		std::int16_t cast_value(std::int8_t aNum)
+		{
+			return aNum;
+		}
+
+		int cast_value(char aNum)
+		{
+			return aNum;
+		}
+	}
+
 	template<class Number, Number Min, Number Max>
 	std::string base_number<Number, Min, Max>::getJSON() const
 	{
@@ -123,14 +147,14 @@ namespace ouroboros
 		}
 		ss << "\", ";
 
-		ss << "\"absolute range\" : [ " << Min << ", " << Max << " ], ";
+		ss << "\"absolute range\" : [ " << detail::cast_value(Min) << ", " << detail::cast_value(Max) << " ], ";
 
 		std::string base = var_field::getJSON();
 		base.erase(base.find_first_of('{'), 1);
 		base.erase(base.find_last_of('}'), 1);
 
-		ss << base << ", \"value\" : " << mValue << ", ";
-		ss << "\"range\" : [ " << mRange.first << ", " << mRange.second << " ]";
+		ss << base << ", \"value\" : " << detail::cast_value(mValue) << ", ";
+		ss << "\"range\" : [ " << detail::cast_value(mRange.first) << ", " << detail::cast_value(mRange.second) << " ]";
 		ss << " }";
 
 		return ss.str();;

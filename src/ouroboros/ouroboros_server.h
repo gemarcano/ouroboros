@@ -101,24 +101,7 @@ namespace ouroboros
 		std::string register_callback(
 			const std::string& aGroup,
 			const std::string& aField,
-			F aCallback);
-
-		/**	Registers a response function for the specified function call.
-		 *
-		 *	@param [in] aFunctionName Name of the function to register.
-		 *	@param [in] aResponse Callback functor that is called as
-		 * 		void(std::vector<std::string>) function.
-		 *	@returns True upon success, false otherwise.
-		 */
-		template <typename F>
-		bool register_function(const std::string& aFunctionName, F aResponse);
-
-		/**	Executes a response function for the specified function call.
-		 *
-		 *	@param [in] aFunctionName Name of the function to call.
-		 *	@param [in] aParameters Parameters as strings in a vector.
-		 */
-		void execute_function(const std::string& aFunctionName, const std::vector<std::string>& aParameters);
+			F&& aCallback);
 
 		/**	Unregisters a callback function for the specified element.
 		 *
@@ -126,6 +109,42 @@ namespace ouroboros
 		 *
 		 */
 		void unregister_callback(const std::string& aID);
+		
+		/**	Registers a response function for the specified function call.
+		 *
+		 *	@param [in] aFunctionName Name of the function to register.
+		 *	@param [in] aResponse Callback functor that is called as
+		 * 		void(std::vector<std::string>) function.
+		 *
+		 *	@returns A unique string ID representing the function registration,
+		 *		or an empty string in case of a failure.
+		 */
+		template <typename F>
+		std::string register_function(
+			const std::string& aFunctionName, F&& aResponse);
+
+		/**	Unregisters a function callback.
+		 *
+		 *	@param [in] aID String describing the ID of the function.
+		 *
+		 */
+		void unregister_function(const std::string& aID);
+
+		/**	Executes a response function for the specified function call.
+		 *
+		 *	@param [in] aFunctionName Name of the function to call.
+		 *	@param [in] aParameters Parameters as strings in a vector.
+		 */
+		void execute_function(
+			const std::string& aFunctionName,
+			const std::vector<std::string>& aParameters);
+
+		//@{
+		//Do not allow for the server to be copyable nor allow for it to be
+		//assigned to anything else.
+		ouroboros_server(const ouroboros_server&) = delete;
+		ouroboros_server& operator=(const ouroboros_server&) = delete;
+		//@}
 
 	private:
 
@@ -141,26 +160,17 @@ namespace ouroboros
 		void handle_notification(
 			const std::string& aGroup, const std::string& aField);
 
-		static ouroboros_server *mpSendServer;
-		static void establish_connection(var_field* aResponse);
+		static void establish_connection(ouroboros_server& aServer, var_field* aResponse);
 		void send_response(mg_connection* aConn);
 
 		static int event_handler(mg_connection *conn, mg_event ev);
 		static std::string normalize_group(const std::string& aGroup);
-
-		//@{
-		//Do not allow for the server to be copyable nor allow for it to be
-		//assigned to anything else.
-		ouroboros_server(const ouroboros_server&);
-		ouroboros_server& operator=(const ouroboros_server&);
-		//@}
 
 		mg_server *mpServer;
 		device_tree<var_field> mTree;
 		data_store<var_field>& mStore;
 
 		function_manager &mFunctionManager;
-
 		callback_manager mCallbackManager;
 
 		std::map<var_field *, std::string> mResponseUrls;

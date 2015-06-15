@@ -21,6 +21,7 @@ int main()
 	cout << "Starting Ouroboros...\n";
 
 	std::string plugin_directory("plugin");
+	
 	ouroboros_server s(8080);
 	plugin_manager plugin_manager(s);
 
