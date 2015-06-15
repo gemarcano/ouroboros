@@ -115,7 +115,9 @@ namespace ouroboros
 		 *	@param [in] aFunctionName Name of the function to register.
 		 *	@param [in] aResponse Callback functor that is called as
 		 * 		void(std::vector<std::string>) function.
-		 *	@returns True upon success, false otherwise.
+		 *
+		 *	@returns A unique string ID representing the function registration,
+		 *		or an empty string in case of a failure.
 		 */
 		template <typename F>
 		std::string register_function(
@@ -123,7 +125,7 @@ namespace ouroboros
 
 		/**	Unregisters a function callback.
 		 *
-		 *	@param [in] aID String describing the ID of the callback.
+		 *	@param [in] aID String describing the ID of the function.
 		 *
 		 */
 		void unregister_function(const std::string& aID);
@@ -133,10 +135,10 @@ namespace ouroboros
 		 *	@param [in] aFunctionName Name of the function to call.
 		 *	@param [in] aParameters Parameters as strings in a vector.
 		 */
-		void execute_function(const std::string& aFunctionName, const std::vector<std::string>& aParameters);
+		void execute_function(
+			const std::string& aFunctionName,
+			const std::vector<std::string>& aParameters);
 
-
-		
 		//@{
 		//Do not allow for the server to be copyable nor allow for it to be
 		//assigned to anything else.
@@ -158,7 +160,6 @@ namespace ouroboros
 		void handle_notification(
 			const std::string& aGroup, const std::string& aField);
 
-		static ouroboros_server *mpSendServer;
 		static void establish_connection(ouroboros_server& aServer, var_field* aResponse);
 		void send_response(mg_connection* aConn);
 
@@ -170,7 +171,6 @@ namespace ouroboros
 		data_store<var_field>& mStore;
 
 		function_manager &mFunctionManager;
-
 		callback_manager mCallbackManager;
 
 		std::map<var_field *, std::string> mResponseUrls;

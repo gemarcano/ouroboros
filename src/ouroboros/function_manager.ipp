@@ -1,3 +1,6 @@
+
+#include <ouroboros/data/misc.h>
+
 namespace ouroboros
 {
 	template <typename F>

@@ -1,4 +1,5 @@
 #include <ouroboros/function_manager.h>
+#include <ouroboros/data/misc.h>
 
 #include <vector>
 #include <string>

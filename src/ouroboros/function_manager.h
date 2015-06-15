@@ -1,8 +1,6 @@
 #ifndef _OUROBOROS_FUNCTION_MANAGER_H_
 #define _OUROBOROS_FUNCTION_MANAGER_H_
 
-#include <ouroboros/data/misc.h>
-
 #include <vector>
 #include <string>
 #include <map>
