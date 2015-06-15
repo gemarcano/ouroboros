@@ -1,5 +1,5 @@
 #include <Python.h>
-#include <server/plugin.h>
+#include <ouroboros/plugin.h>
 #include <cstdio>
 
 static const char* script = "./plugin/sample_python.py";

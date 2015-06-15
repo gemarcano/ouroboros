@@ -2,17 +2,16 @@
 #define _OUROBOROS_OUROBOROS_SERVER_
 
 #include <ouroboros/rest.h>
-#include <ouroboros/callback.hpp>
 #include <ouroboros/callback_manager.h>
 #include <ouroboros/data/base.hpp>
 #include <ouroboros/data/data_store.hpp>
-#include <ouroboros/data/subject.hpp>
 #include <ouroboros/function_manager.h>
 #include <ouroboros/device_tree.hpp>
 
 #include <pthread.h>
 #include <mongoose/mongoose.h>
 
+#include <functional>
 #include <cstdint>
 
 namespace ouroboros
@@ -20,8 +19,6 @@ namespace ouroboros
 	class ouroboros_server
 	{
 	public:
-		typedef function_manager::function_f function_f;
-		typedef void (*callback_f)(var_field* aField);
 
 		/**	Constructor.
 		 *
@@ -100,10 +97,11 @@ namespace ouroboros
 		 *		failed.
 		 *
 		 */
+		template <typename F>
 		std::string register_callback(
 			const std::string& aGroup,
 			const std::string& aField,
-			callback_f aCallback);
+			F aCallback);
 
 		/**	Registers a response function for the specified function call.
 		 *
@@ -112,7 +110,8 @@ namespace ouroboros
 		 * 		void(std::vector<std::string>) function.
 		 *	@returns True upon success, false otherwise.
 		 */
-		bool register_function(const std::string& aFunctionName, function_f aResponse);
+		template <typename F>
+		bool register_function(const std::string& aFunctionName, F aResponse);
 
 		/**	Executes a response function for the specified function call.
 		 *
@@ -163,12 +162,12 @@ namespace ouroboros
 		function_manager &mFunctionManager;
 
 		callback_manager mCallbackManager;
-		std::map<std::string, subject<
-				id_callback<var_field*, callback_f> > > mCallbackSubjects;
 
 		std::map<var_field *, std::string> mResponseUrls;
 	};
 }
+
+#include "ouroboros_server.ipp"
 
 #endif//_OUROBOROS_OUROBOROS_SERVER_
 
