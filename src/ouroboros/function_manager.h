@@ -1,6 +1,8 @@
 #ifndef _OUROBOROS_FUNCTION_MANAGER_H_
 #define _OUROBOROS_FUNCTION_MANAGER_H_
 
+#include <ouroboros/data/misc.h>
+
 #include <vector>
 #include <string>
 #include <map>
@@ -19,11 +21,18 @@ namespace ouroboros
 		 *	@param [in] aFunctionName Name of the function to register.
 		 *	@param [in] aResponse Callback functor that is called as
 		 *		void(std::vector<std::string>) function.
-		 *	@returns True upon success, false otherwise.
+		 *	@returns ID string of the registered function. Empty string if
+		 *		failed to register.
 		 */
 		template<typename F>
-		bool register_function(
+		std::string register_function(
 			const std::string& aFunctionName, F&& aResponse);
+		
+		/**	Unregisters a function with the given ID.
+		 *
+		 *	@returns The name of the given function when registered.
+		 */
+		std::string unregister_function(const std::string& aID);
 		
 		/**	Executes a response function for the specified function call.
 		 *
@@ -37,7 +46,10 @@ namespace ouroboros
 		function_manager(const function_manager&) = delete;
 
 	private:
-		std::map<std::string, std::vector<function_f> > mFunctionCallbacks;
+		static const std::string rand_string;
+		
+		std::map<std::string, std::string> mIdToName;
+		std::map<std::string, std::vector<std::pair<std::string, function_f>>> mNameToFuncs;
 	};
 }
 

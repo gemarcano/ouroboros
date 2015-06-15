@@ -38,6 +38,8 @@ namespace ouroboros
 			auto cmp = [aID](const std::pair<std::string, callback_f>& a){ return aID == a.first; };
 			vec.erase(std::find_if(vec.begin(), vec.end(), cmp));
 		}
+		
+		mIdToFields.erase(aID);
 
 		return result;
 	}

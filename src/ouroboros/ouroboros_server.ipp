@@ -11,7 +11,7 @@ namespace ouroboros
 	}
 
 	template <typename F>
-	bool ouroboros_server::register_function(const std::string& aFunctionName, F&& aResponse)
+	std::string ouroboros_server::register_function(const std::string& aFunctionName, F&& aResponse)
 	{
 		return mFunctionManager.register_function(aFunctionName, aResponse);
 	}

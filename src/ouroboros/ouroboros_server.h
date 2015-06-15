@@ -103,6 +103,13 @@ namespace ouroboros
 			const std::string& aField,
 			F&& aCallback);
 
+		/**	Unregisters a callback function for the specified element.
+		 *
+		 *	@param [in] aID String describing the ID of the callback.
+		 *
+		 */
+		void unregister_callback(const std::string& aID);
+		
 		/**	Registers a response function for the specified function call.
 		 *
 		 *	@param [in] aFunctionName Name of the function to register.
@@ -111,7 +118,15 @@ namespace ouroboros
 		 *	@returns True upon success, false otherwise.
 		 */
 		template <typename F>
-		bool register_function(const std::string& aFunctionName, F&& aResponse);
+		std::string register_function(
+			const std::string& aFunctionName, F&& aResponse);
+
+		/**	Unregisters a function callback.
+		 *
+		 *	@param [in] aID String describing the ID of the callback.
+		 *
+		 */
+		void unregister_function(const std::string& aID);
 
 		/**	Executes a response function for the specified function call.
 		 *
@@ -120,12 +135,7 @@ namespace ouroboros
 		 */
 		void execute_function(const std::string& aFunctionName, const std::vector<std::string>& aParameters);
 
-		/**	Unregisters a callback function for the specified element.
-		 *
-		 *	@param [in] aID String describing the ID of the callback.
-		 *
-		 */
-		void unregister_callback(const std::string& aID);
+
 		
 		//@{
 		//Do not allow for the server to be copyable nor allow for it to be

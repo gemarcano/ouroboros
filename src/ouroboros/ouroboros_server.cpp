@@ -377,12 +377,15 @@ namespace ouroboros
 
 
 
-	void ouroboros_server::unregister_callback(const std::string&)
+	void ouroboros_server::unregister_callback(const std::string& aID)
 	{
-		//TODO
+		mCallbackManager.unregister_callback(aID);
 	}
 	
-	
+	void ouroboros_server::unregister_function(const std::string& aID)
+	{
+		mFunctionManager.unregister_function(aID);
+	}
 	
 	void ouroboros_server::execute_function(const std::string& aFunctionName, const std::vector<std::string>& aParameters)
 	{

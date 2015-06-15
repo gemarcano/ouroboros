@@ -1,11 +1,21 @@
 namespace ouroboros
 {
 	template <typename F>
-	bool function_manager::register_function(
+	std::string function_manager::register_function(
 		const std::string& aFunctionName, F&& aResponse)
 	{
-		mFunctionCallbacks[aFunctionName].emplace_back(aResponse);
+		std::string result = aFunctionName;
+		result += ":";
+		result = detail::generate_random_string(result, rand_string, 1);
+		
+		while (mIdToName.count(result))
+		{
+			result = detail::generate_random_string(result, rand_string, 1);
+		}
 
-		return true;
+		mIdToName[result] = aFunctionName;
+		mNameToFuncs[aFunctionName].emplace_back(result, aResponse);
+
+		return result;
 	}
 }
